@@ -16,10 +16,6 @@ from sklearn.metrics import (
     mean_squared_error,
 )
 
-# ============================================================
-# FORTRESS - IMPROVED AUTOMOTIVE CNC AI TRAINING
-# ============================================================
-
 CSV_PATH = "ml/data/fortress_automotive_cnc_dataset.csv"
 MODEL_DIR = "ml/models"
 
@@ -32,22 +28,12 @@ print("=" * 70)
 print("FORTRESS IMPROVED DEEP LEARNING TRAINING")
 print("=" * 70)
 
-
-# ============================================================
-# 1. LOAD DATA
-# ============================================================
-
 print("\n[1/8] Loading dataset...")
 
 df = pd.read_csv(CSV_PATH)
 
 print(f"Dataset shape: {df.shape}")
 print(f"Machines: {df['machine_id'].nunique()}")
-
-
-# ============================================================
-# 2. FEATURES
-# ============================================================
 
 FEATURES = [
     "spindle_speed_rpm",
@@ -66,11 +52,6 @@ FEATURES = [
 
 TARGET_FAILURE = "failure"
 TARGET_RUL = "rul_hours"
-
-
-# ============================================================
-# 3. MACHINE-WISE SPLIT
-# ============================================================
 
 print("\n[2/8] Creating machine-wise train/test split...")
 
@@ -96,11 +77,6 @@ print(f"Training machines: {len(train_machines)}")
 print(f"Testing machines : {len(test_machines)}")
 print(f"Training records : {len(train_df)}")
 print(f"Testing records  : {len(test_df)}")
-
-
-# ============================================================
-# 4. SCALING
-# ============================================================
 
 print("\n[3/8] Scaling sensor features...")
 
@@ -129,12 +105,6 @@ with open(
     pickle.dump(scaler, f)
 
 print("Scaler saved.")
-
-
-# ============================================================
-# 5. ANN FAILURE MODEL
-# ============================================================
-
 print("\n[4/8] Training ANN failure model...")
 
 failure_model = tf.keras.Sequential([
@@ -275,18 +245,7 @@ print(
     f"ROC-AUC  : {failure_auc:.4f}"
 )
 
-
-# ============================================================
-# 6. IMPROVED AUTOENCODER
-# ============================================================
-
 print("\n[5/8] Training deep anomaly detection model...")
-
-# ------------------------------------------------------------
-# IMPORTANT:
-# Use only clearly healthy samples.
-# This prevents degraded samples from being treated as normal.
-# ------------------------------------------------------------
 
 healthy_train_df = train_df[
     (train_df["failure"] == 0) &
@@ -302,11 +261,6 @@ print(
 X_healthy = scaler.transform(
     healthy_train_df[FEATURES]
 )
-
-
-# ------------------------------------------------------------
-# Autoencoder
-# ------------------------------------------------------------
 
 autoencoder = tf.keras.Sequential([
 
@@ -388,11 +342,6 @@ autoencoder.save(
     )
 )
 
-
-# ------------------------------------------------------------
-# Reconstruction error
-# ------------------------------------------------------------
-
 healthy_reconstructed = autoencoder.predict(
     X_healthy,
     verbose=0
@@ -406,8 +355,6 @@ healthy_errors = np.mean(
     axis=1
 )
 
-
-# Use 99th percentile of healthy behavior
 threshold = np.percentile(
     healthy_errors,
     99
@@ -416,11 +363,6 @@ threshold = np.percentile(
 print(
     f"Anomaly threshold: {threshold:.6f}"
 )
-
-
-# ------------------------------------------------------------
-# Test anomaly detection
-# ------------------------------------------------------------
 
 X_test_reconstructed = autoencoder.predict(
     X_test,
@@ -488,11 +430,6 @@ print(
 print(
     f"ROC-AUC  : {anomaly_auc:.4f}"
 )
-
-
-# ============================================================
-# 7. IMPROVED LSTM RUL MODEL
-# ============================================================
 
 print("\n[6/8] Creating LSTM degradation sequences...")
 
@@ -585,11 +522,6 @@ print(
     f"{X_lstm_test.shape}"
 )
 
-
-# ------------------------------------------------------------
-# RUL normalization
-# ------------------------------------------------------------
-
 y_lstm_train_scaled = (
     y_lstm_train /
     RUL_SCALE
@@ -599,11 +531,6 @@ y_lstm_test_scaled = (
     y_lstm_test /
     RUL_SCALE
 )
-
-
-# ------------------------------------------------------------
-# LSTM network
-# ------------------------------------------------------------
 
 rul_model = tf.keras.Sequential([
 
@@ -686,11 +613,6 @@ rul_model.save(
     )
 )
 
-
-# ------------------------------------------------------------
-# RUL predictions
-# ------------------------------------------------------------
-
 rul_predictions_scaled = (
     rul_model.predict(
         X_lstm_test,
@@ -730,12 +652,6 @@ print(
 print(
     f"RMSE: {rul_rmse:.2f} hours"
 )
-
-
-# ============================================================
-# 8. SAVE CONFIGURATION
-# ============================================================
-
 print("\n[7/8] Saving model configuration...")
 
 config = {
@@ -780,11 +696,6 @@ with open(
         f,
         indent=4
     )
-
-
-# ============================================================
-# 9. SAMPLE PREDICTION
-# ============================================================
 
 print("\n[8/8] Generating sample prediction...")
 
@@ -854,11 +765,6 @@ sample_rul = max(
     float(sample_rul)
 )
 
-
-# ------------------------------------------------------------
-# Health calculation
-# ------------------------------------------------------------
-
 anomaly_ratio = (
     sample_anomaly /
     max(threshold, 1e-8)
@@ -917,11 +823,6 @@ else:
 
     sample_status = "CRITICAL"
 
-
-# ============================================================
-# FINAL OUTPUT
-# ============================================================
-
 print("\n" + "=" * 70)
 print("FORTRESS SAMPLE PREDICTION")
 print("=" * 70)
@@ -967,11 +868,6 @@ print(
 )
 
 print("=" * 70)
-
-
-# ============================================================
-# FINAL SUMMARY
-# ============================================================
 
 print("\n" + "=" * 70)
 print("FORTRESS TRAINING COMPLETE")
