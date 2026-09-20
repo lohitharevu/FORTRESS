@@ -1,0 +1,36 @@
+html {
+  background: #03070c;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: #03070c;
+}
+
+body,
+button {
+  font-family: "Inter", sans-serif;
+}
+
+::selection {
+  background: rgba(0, 191, 255, 0.25);
+  color: white;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #03070c;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #123542;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00bfff;
+}

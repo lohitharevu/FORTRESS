@@ -1,0 +1,25 @@
+{
+    "features": [
+        "spindle_speed_rpm",
+        "spindle_current_a",
+        "torque_nm",
+        "vibration_x",
+        "vibration_y",
+        "vibration_z",
+        "temperature_c",
+        "coolant_pressure_bar",
+        "cutting_force_n",
+        "acoustic_emission",
+        "tool_wear_percent",
+        "tool_age_hours"
+    ],
+    "sequence_length": 40,
+    "rul_scale": 1250.0,
+    "anomaly_threshold": 0.021987066738239205,
+    "failure_threshold": 0.5,
+    "models": {
+        "failure": "failure_model.keras",
+        "autoencoder": "autoencoder_model.keras",
+        "rul": "rul_lstm_model.keras"
+    }
+}
