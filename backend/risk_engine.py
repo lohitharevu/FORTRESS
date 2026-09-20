@@ -1,8 +1,3 @@
-# ============================================================
-# FORTRESS RISK ENGINE
-# Combines AI predictions into a machine health assessment.
-# ============================================================
-
 
 def clamp(value, minimum, maximum):
     """Keep a value within the specified range."""
@@ -27,31 +22,20 @@ def calculate_risk(
 
     into a final machine health score.
     """
-
-    # ========================================================
-    # 1. ANOMALY SEVERITY
-    # ========================================================
-
     anomaly_ratio = (
         anomaly_score /
         max(anomaly_threshold, 1e-8)
     )
 
-    # Cap anomaly severity at 3x threshold.
     anomaly_ratio = min(
         anomaly_ratio,
         3.0
     )
 
-    # Convert to 0-100 severity.
+
     anomaly_severity = (
         anomaly_ratio / 3.0
     ) * 100
-
-
-    # ========================================================
-    # 2. FAILURE RISK
-    # ========================================================
 
     failure_risk = (
         clamp(
@@ -61,11 +45,6 @@ def calculate_risk(
         )
         * 100
     )
-
-
-    # ========================================================
-    # 3. RUL RISK
-    # ========================================================
 
     rul_ratio = (
         rul_hours /
@@ -78,26 +57,11 @@ def calculate_risk(
         1.0
     )
 
-    # High RUL = low risk
-    # Low RUL = high risk
-
     rul_risk = (
         1.0 -
         rul_ratio
     ) * 100
 
-
-    # ========================================================
-    # 4. COMBINED RISK
-    # ========================================================
-    #
-    # Weights:
-    #
-    # ANN failure prediction  = 50%
-    # Anomaly detection       = 30%
-    # RUL                     = 20%
-    #
-    # ========================================================
 
     combined_risk = (
         failure_risk * 0.60
@@ -114,11 +78,6 @@ def calculate_risk(
         100
     )
 
-
-    # ========================================================
-    # 5. HEALTH SCORE
-    # ========================================================
-
     health_score = (
         100 -
         combined_risk
@@ -130,21 +89,6 @@ def calculate_risk(
         100
     )
 
-
-    # ========================================================
-    # 6. MACHINE STATUS
-    # ========================================================
-    #
-    # REQUIRED FORTRESS HEALTH RULE:
-    #
-    # > 80       = HEALTHY
-    # 40 to 80   = AT RISK
-    # < 40       = CRITICAL
-    #
-    # NOTE:
-    # Exactly 80 is AT RISK.
-    #
-    # ========================================================
 
     if health_score > 80:
 
@@ -158,10 +102,6 @@ def calculate_risk(
 
         status = "CRITICAL"
 
-
-    # ========================================================
-    # 7. MAINTENANCE RECOMMENDATION
-    # ========================================================
 
     if status == "CRITICAL":
 
@@ -184,10 +124,6 @@ def calculate_risk(
             "Continue normal monitoring."
         )
 
-
-    # ========================================================
-    # 8. RETURN
-    # ========================================================
 
     return {
 

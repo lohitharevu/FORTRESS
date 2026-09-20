@@ -7,10 +7,6 @@ from pydantic import BaseModel, Field
 from backend.inference import analyze_machine
 
 
-# ============================================================
-# FORTRESS API
-# ============================================================
-
 app = FastAPI(
     title="FORTRESS AI API",
     description=(
@@ -21,10 +17,6 @@ app = FastAPI(
 )
 
 
-# ============================================================
-# CORS
-# ============================================================
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -33,10 +25,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-# ============================================================
-# INPUT MODEL
-# ============================================================
 
 class SensorReading(BaseModel):
 
@@ -117,10 +105,6 @@ class AnalysisRequest(BaseModel):
     history: Optional[List[SensorReading]] = None
 
 
-# ============================================================
-# ROOT
-# ============================================================
-
 @app.get("/")
 def root():
 
@@ -134,10 +118,6 @@ def root():
     }
 
 
-# ============================================================
-# HEALTH CHECK
-# ============================================================
-
 @app.get("/health")
 def health():
 
@@ -146,10 +126,6 @@ def health():
         "ai_engine": "loaded"
     }
 
-
-# ============================================================
-# AI ANALYSIS
-# ============================================================
 
 @app.post("/analyze")
 def analyze(request: AnalysisRequest):

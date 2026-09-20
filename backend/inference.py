@@ -7,11 +7,6 @@ import tensorflow as tf
 
 from backend.risk_engine import calculate_risk
 
-
-# ============================================================
-# FORTRESS AI INFERENCE ENGINE
-# ============================================================
-
 BASE_DIR = os.path.dirname(
     os.path.dirname(
         os.path.abspath(__file__)
@@ -24,10 +19,6 @@ MODEL_DIR = os.path.join(
     "models"
 )
 
-
-# ============================================================
-# LOAD CONFIGURATION
-# ============================================================
 
 CONFIG_PATH = os.path.join(
     MODEL_DIR,
@@ -49,10 +40,6 @@ ANOMALY_THRESHOLD = config["anomaly_threshold"]
 FAILURE_THRESHOLD = config["failure_threshold"]
 
 
-# ============================================================
-# LOAD SCALER
-# ============================================================
-
 SCALER_PATH = os.path.join(
     MODEL_DIR,
     "scaler.pkl"
@@ -65,10 +52,6 @@ with open(
 
     scaler = pickle.load(f)
 
-
-# ============================================================
-# LOAD TRAINED MODELS
-# ============================================================
 
 failure_model = tf.keras.models.load_model(
     os.path.join(
@@ -91,10 +74,6 @@ rul_model = tf.keras.models.load_model(
     )
 )
 
-
-# ============================================================
-# STARTUP INFORMATION
-# ============================================================
 
 print("=" * 60)
 print("FORTRESS AI ENGINE LOADED")
@@ -127,11 +106,6 @@ print("✓ Scaler loaded")
 
 print("=" * 60)
 
-
-# ============================================================
-# HELPER
-# ============================================================
-
 def clamp(value, minimum, maximum):
     """Keep a value within the specified range."""
 
@@ -140,10 +114,6 @@ def clamp(value, minimum, maximum):
         min(maximum, value)
     )
 
-
-# ============================================================
-# FEATURE BUILDER
-# ============================================================
 
 def build_feature_row(sensor_data):
     """
@@ -167,18 +137,11 @@ def build_feature_row(sensor_data):
     ]
 
 
-# ============================================================
-# MAIN AI ANALYSIS
-# ============================================================
-
 def analyze_machine(
     sensor_data,
     history=None
 ):
 
-    # ========================================================
-    # 1. CURRENT SENSOR DATA
-    # ========================================================
 
     current_values = np.array(
         [
@@ -190,18 +153,10 @@ def analyze_machine(
     )
 
 
-    # ========================================================
-    # 2. SCALE CURRENT DATA
-    # ========================================================
-
     latest_scaled = scaler.transform(
         current_values
     )
 
-
-    # ========================================================
-    # 3. ANN — FAILURE PREDICTION
-    # ========================================================
 
     failure_probability = float(
         failure_model.predict(
@@ -216,10 +171,6 @@ def analyze_machine(
         1.0
     )
 
-
-    # ========================================================
-    # 4. AUTOENCODER — ANOMALY DETECTION
-    # ========================================================
 
     reconstructed = (
         autoencoder_model.predict(
@@ -242,13 +193,6 @@ def analyze_machine(
         ANOMALY_THRESHOLD
     )
 
-
-    # ========================================================
-    # DEBUG INFORMATION
-    #
-    # This lets us see the ACTUAL model outputs in the
-    # FastAPI terminal.
-    # ========================================================
 
     print(
         "=" * 60
@@ -289,10 +233,6 @@ def analyze_machine(
     )
 
 
-    # ========================================================
-    # 5. LSTM — REMAINING USEFUL LIFE
-    # ========================================================
-
     if (
         history
         and
@@ -318,13 +258,6 @@ def analyze_machine(
 
     else:
 
-        # ----------------------------------------------------
-        # Single-reading mode
-        #
-        # LSTM requires 40 time steps.
-        # When history is unavailable, repeat the current
-        # sensor state to create the required sequence.
-        # ----------------------------------------------------
 
         sequence_scaled = np.repeat(
             latest_scaled,
@@ -366,10 +299,6 @@ def analyze_machine(
     )
 
 
-    # ========================================================
-    # 6. RISK ENGINE
-    # ========================================================
-
     risk = calculate_risk(
         failure_probability=failure_probability,
         anomaly_score=anomaly_score,
@@ -378,22 +307,6 @@ def analyze_machine(
         rul_scale=RUL_SCALE
     )
 
-
-    # ========================================================
-    # 7. FINAL RESPONSE
-    # ========================================================
-    #
-    # IMPORTANT:
-    #
-    # failure_probability is returned as 0-1.
-    #
-    # Example:
-    #
-    # 0.000162 = 0.0162%
-    #
-    # This allows the frontend to convert it into a
-    # percentage exactly once.
-    # ========================================================
 
     return {
 
