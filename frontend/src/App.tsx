@@ -198,9 +198,6 @@ const emptyForm: SensorForm = {
   toolAge: "180",
 };
 
-/* =========================================================
-   DISPLAY HELPERS
-========================================================= */
 
 function formatFailure(value: number) {
   if (value < 1) {
@@ -210,33 +207,6 @@ function formatFailure(value: number) {
   return String(Number(value.toFixed(1)));
 }
 
-/*
- * ANOMALY DISPLAY
- *
- * Backend anomalyRatio =
- *
- * anomaly_score / anomaly_threshold
- *
- * Instead of directly multiplying the ratio by 100
- * and immediately capping values above 100%,
- * we normalize the ratio continuously.
- *
- * Examples:
- *
- * 0.10x -> 9.1%
- * 0.50x -> 33.3%
- * 1.00x -> 50.0%
- * 2.00x -> 66.7%
- * 5.77x -> 85.2%
- * 10.00x -> 90.9%
- *
- * This keeps the anomaly severity between 0% and 100%
- * while still allowing different machines to show
- * different anomaly values.
- *
- * Static machines continue displaying their
- * existing anomaly percentage.
- */
 
 function formatAnomaly(machine: Machine) {
   if (machine.anomalyRatio !== undefined) {
@@ -372,11 +342,7 @@ function App() {
     }
   };
 
-  /*
-   * =========================================================
-   * RUN BACKEND ANALYSIS
-   * =========================================================
-   */
+  
 
   const runBackendAnalysis = async () => {
     setAnalyzing(true);
@@ -458,11 +424,7 @@ function App() {
     }
   };
 
-  /*
-   * =========================================================
-   * RUN MACHINE ANALYSIS
-   * =========================================================
-   */
+  
 
   const runMachineAnalysis = async () => {
     setAnalysisResult(null);
@@ -470,11 +432,7 @@ function App() {
     await runBackendAnalysis();
   };
 
-  /*
-   * =========================================================
-   * STATUS
-   * =========================================================
-   */
+  
 
   
 
@@ -2059,9 +2017,7 @@ function App() {
   );
 }
 
-/* =========================================================
-   BACKEND PAYLOAD
-========================================================= */
+
 
 function buildBackendPayload(
   form: SensorForm
@@ -2131,9 +2087,7 @@ function buildBackendPayload(
   };
 }
 
-/* =========================================================
-   BACKEND RESULT CONVERTER
-========================================================= */
+
 
 function convertBackendResult(
   data: any,
@@ -2143,11 +2097,7 @@ function convertBackendResult(
   const analysis =
     data?.analysis ?? {};
 
-  /*
-   * =========================================================
-   * FAILURE PROBABILITY
-   * =========================================================
-   */
+  
 
   const failureProbability =
     Number(
@@ -2159,39 +2109,7 @@ function convertBackendResult(
       ? failureProbability * 100
       : failureProbability;
 
-  /*
-   * =========================================================
-   * ANOMALY
-   * =========================================================
-   *
-   * Backend gives:
-   *
-   * anomaly_score
-   *
-   * and:
-   *
-   * anomaly_threshold
-   *
-   * We calculate:
-   *
-   * anomalyRatio =
-   * anomaly_score / anomaly_threshold
-   *
-   * Then normalize the ratio continuously:
-   *
-   * ratio / (1 + ratio) * 100
-   *
-   * Examples:
-   *
-   * 0.10x -> 9.1%
-   * 0.50x -> 33.3%
-   * 1.00x -> 50.0%
-   * 2.00x -> 66.7%
-   * 5.77x -> 85.2%
-   *
-   * This prevents every value above the threshold
-   * from becoming 100%.
-   */
+  
 
   const anomalyScore =
     Number(
@@ -2217,21 +2135,14 @@ function convertBackendResult(
         ) * 100
       : 0;
 
-  /*
-   * =========================================================
-   * HEALTH
-   * =========================================================
-   */
+  
 
   const rawHealth =
     Number(
       analysis.health_score ?? 0
     );
 
-  /*
-   * Keep health inside the valid
-   * 0–100 range.
-   */
+  
 
   const health =
     Math.max(
@@ -2242,45 +2153,13 @@ function convertBackendResult(
       )
     );
 
-  /*
-   * =========================================================
-   * RUL
-   * =========================================================
-   */
+  
 
   const rul =
     Number(
       analysis.rul_hours ?? 0
     );
 
-  /*
-   * =========================================================
-   * STATUS
-   * =========================================================
-   *
-   * STATUS IS BASED ONLY ON HEALTH SCORE.
-   *
-   * HEALTH > 80
-   *       -> HEALTHY
-   *
-   * HEALTH 40–80
-   *       -> AT RISK
-   *
-   * HEALTH < 40
-   *       -> CRITICAL
-   *
-   * Therefore:
-   *
-   * 100 -> HEALTHY
-   * 91  -> HEALTHY
-   * 81  -> HEALTHY
-   * 80  -> AT RISK
-   * 79  -> AT RISK
-   * 40  -> AT RISK
-   * 39  -> CRITICAL
-   * 20  -> CRITICAL
-   * 0   -> CRITICAL
-   */
 
   let status: Status;
 
@@ -2298,11 +2177,7 @@ function convertBackendResult(
 
   }
 
-  /*
-   * =========================================================
-   * TEMPERATURE
-   * =========================================================
-   */
+  
 
   const temperature =
     (
@@ -2311,11 +2186,7 @@ function convertBackendResult(
       ) || 300
     ) - 273.15;
 
-  /*
-   * =========================================================
-   * RETURN
-   * =========================================================
-   */
+  
 
   return {
 
@@ -2389,10 +2260,6 @@ function convertBackendResult(
   };
 }
 
-/* =========================================================
-   PAGE TITLE
-========================================================= */
-
 function PageTitle({
   eyebrow,
   title,
@@ -2422,9 +2289,7 @@ function PageTitle({
   );
 }
 
-/* =========================================================
-   MACHINE HEALTH
-========================================================= */
+
 
 function MachineHealthPanel({
   selected,
@@ -2543,9 +2408,7 @@ function MachineHealthPanel({
   );
 }
 
-/* =========================================================
-   AI OVERVIEW
-========================================================= */
+
 
 function AIOverview({
   history,
@@ -2635,9 +2498,6 @@ function AIOverview({
   );
 }
 
-/* =========================================================
-   ANALYSIS RESULT
-========================================================= */
 
 function AnalysisResult({
   result,
@@ -2753,9 +2613,6 @@ function AnalysisResult({
   );
 }
 
-/* =========================================================
-   INPUT FIELD
-========================================================= */
 
 function InputField({
   label,
@@ -2801,10 +2658,6 @@ function InputField({
     </label>
   );
 }
-
-/* =========================================================
-   HEALTH CHART
-========================================================= */
 
 function HealthChart({
   history,
@@ -2917,9 +2770,6 @@ function HealthChart({
   );
 }
 
-/* =========================================================
-   METRIC
-========================================================= */
 
 function Metric({
   label,
@@ -2966,9 +2816,6 @@ function Metric({
   );
 }
 
-/* =========================================================
-   PANEL HEADER
-========================================================= */
 
 function PanelHeader({
   title,
@@ -3003,9 +2850,7 @@ function PanelHeader({
   );
 }
 
-/* =========================================================
-   PIPELINE NODE
-========================================================= */
+
 
 function PipelineNode({
   number,
@@ -3050,9 +2895,6 @@ function PipelineNode({
   );
 }
 
-/* =========================================================
-   PIPELINE ARROW
-========================================================= */
 
 function PipelineArrow() {
 
@@ -3063,9 +2905,6 @@ function PipelineArrow() {
   );
 }
 
-/* =========================================================
-   SENSOR
-========================================================= */
 
 function Sensor({
   label,
@@ -3116,10 +2955,6 @@ function Sensor({
     </div>
   );
 }
-
-/* =========================================================
-   PREDICTION
-========================================================= */
 
 function Prediction({
   title,
