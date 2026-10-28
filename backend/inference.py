@@ -5,7 +5,7 @@ import pickle
 import numpy as np
 import tensorflow as tf
 
-from backend.risk_engine import calculate_risk
+from risk_engine import calculate_risk
 
 BASE_DIR = os.path.dirname(
     os.path.dirname(

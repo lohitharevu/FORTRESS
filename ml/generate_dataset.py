@@ -2,11 +2,6 @@ import os
 import numpy as np
 import pandas as pd
 
-# ============================================================
-# FORTRESS
-# AUTOMOTIVE CNC PREDICTIVE MAINTENANCE DATASET
-# ============================================================
-
 np.random.seed(42)
 
 OUTPUT_DIR = os.path.join("ml", "data")
@@ -16,11 +11,6 @@ OUTPUT_FILE = os.path.join(
 )
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
-
-
-# ============================================================
-# CONFIGURATION
-# ============================================================
 
 N_MACHINES = 50
 CYCLES_PER_MACHINE = 1000
@@ -45,11 +35,6 @@ MATERIALS = [
     "Forged Steel",
     "Aluminum-Silicon Alloy",
 ]
-
-
-# ============================================================
-# MACHINE PROFILES
-# ============================================================
 
 machine_profiles = []
 
@@ -88,29 +73,13 @@ for i in range(N_MACHINES):
         "phase": np.random.uniform(0, 2 * np.pi),
     })
 
-
-# ============================================================
-# GENERATE DATA
-# ============================================================
-
 rows = []
 
 for machine in machine_profiles:
 
     for cycle in range(CYCLES_PER_MACHINE):
 
-        # ----------------------------------------------------
-        # MACHINE PROGRESS
-        # ----------------------------------------------------
-
         progress = cycle / (CYCLES_PER_MACHINE - 1)
-
-        # ----------------------------------------------------
-        # TOOL WEAR
-        # ----------------------------------------------------
-
-        # Slow degradation initially.
-        # Faster degradation near end of life.
 
         wear_curve = (
             0.15 * progress
@@ -131,10 +100,6 @@ for machine in machine_profiles:
             100
         )
 
-        # ----------------------------------------------------
-        # SPINDLE SPEED
-        # ----------------------------------------------------
-
         rpm = (
             machine["base_rpm"]
             + 120 * np.sin(
@@ -149,9 +114,6 @@ for machine in machine_profiles:
             5800
         )
 
-        # ----------------------------------------------------
-        # TORQUE
-        # ----------------------------------------------------
 
         torque = (
             machine["base_torque"]
@@ -165,10 +127,6 @@ for machine in machine_profiles:
             20,
             90
         )
-
-        # ----------------------------------------------------
-        # SPINDLE CURRENT
-        # ----------------------------------------------------
 
         spindle_current = (
             machine["base_current"]
@@ -185,10 +143,6 @@ for machine in machine_profiles:
             8,
             38
         )
-
-        # ----------------------------------------------------
-        # VIBRATION
-        # ----------------------------------------------------
 
         vibration_base = (
             0.75
@@ -231,10 +185,6 @@ for machine in machine_profiles:
             vibration_z
         )
 
-        # ----------------------------------------------------
-        # TEMPERATURE
-        # ----------------------------------------------------
-
         temperature = (
             machine["base_temperature"]
             + 0.045 * tool_wear
@@ -251,10 +201,6 @@ for machine in machine_profiles:
             100
         )
 
-        # ----------------------------------------------------
-        # COOLANT PRESSURE
-        # ----------------------------------------------------
-
         coolant_pressure = (
             machine["base_pressure"]
             - 0.003 * tool_wear
@@ -266,10 +212,6 @@ for machine in machine_profiles:
             3.0,
             7.0
         )
-
-        # ----------------------------------------------------
-        # CUTTING FORCE
-        # ----------------------------------------------------
 
         cutting_force = (
             torque * 8.5
@@ -283,10 +225,6 @@ for machine in machine_profiles:
             800
         )
 
-        # ----------------------------------------------------
-        # ACOUSTIC EMISSION
-        # ----------------------------------------------------
-
         acoustic_emission = (
             25
             + 0.20 * tool_wear
@@ -299,18 +237,10 @@ for machine in machine_profiles:
             5
         )
 
-        # ----------------------------------------------------
-        # TOOL AGE
-        # ----------------------------------------------------
-
         tool_age_hours = (
             progress *
             machine["tool_life"]
         )
-
-        # ====================================================
-        # NORMALIZED DEGRADATION FEATURES
-        # ====================================================
 
         wear_norm = np.clip(
             tool_wear / 100,
@@ -342,19 +272,7 @@ for machine in machine_profiles:
             1
         )
 
-        # ====================================================
-        # IMPROVED RUL MODEL
-        # ====================================================
-
-        # Instead of calculating RUL only from elapsed tool age,
-        # RUL now reflects the actual degradation state.
-        #
-        # Low wear  -> long RUL
-        # Medium wear -> decreasing RUL
-        # High wear -> rapid RUL reduction
-        #
-        # Multiple machine-condition signals contribute.
-
+        
         degradation_index = (
             0.55 * wear_norm
             + 0.20 * vibration_norm
@@ -369,7 +287,7 @@ for machine in machine_profiles:
             1
         )
 
-        # Nonlinear remaining-life curve
+        
         remaining_fraction = (
             1.0 -
             degradation_index ** 1.35
@@ -380,7 +298,7 @@ for machine in machine_profiles:
             * remaining_fraction
         )
 
-        # Make late-life degradation sharper
+        
         if tool_wear > 80:
 
             extra_degradation = (
@@ -392,7 +310,6 @@ for machine in machine_profiles:
                 0.25 * extra_degradation
             )
 
-        # Realistic measurement uncertainty
         rul_hours += np.random.normal(
             0,
             8
@@ -404,9 +321,6 @@ for machine in machine_profiles:
             machine["tool_life"]
         )
 
-        # ====================================================
-        # ANOMALY SCORE
-        # ====================================================
 
         anomaly_score = (
             0.45 * wear_norm
@@ -427,9 +341,6 @@ for machine in machine_profiles:
             1
         )
 
-        # ====================================================
-        # FAILURE RISK
-        # ====================================================
 
         risk_signal = (
             4.5 * (wear_norm ** 3)
@@ -459,10 +370,6 @@ for machine in machine_profiles:
             1
         )
 
-        # ====================================================
-        # FAILURE LABEL
-        # ====================================================
-
         failure = int(
             (
                 failure_probability >= 0.70
@@ -486,10 +393,6 @@ for machine in machine_profiles:
                 tool_wear > 80
             )
         )
-
-        # ====================================================
-        # HEALTH SCORE
-        # ====================================================
 
         degradation = (
             0.40 * wear_norm
@@ -516,10 +419,6 @@ for machine in machine_profiles:
             100
         )
 
-        # ====================================================
-        # MACHINE STATUS
-        # ====================================================
-
         if health_score >= 70:
 
             status = "HEALTHY"
@@ -531,10 +430,6 @@ for machine in machine_profiles:
         else:
 
             status = "CRITICAL"
-
-        # ====================================================
-        # MAINTENANCE RECOMMENDATION
-        # ====================================================
 
         if status == "HEALTHY":
 
@@ -554,9 +449,6 @@ for machine in machine_profiles:
                 "Immediate inspection; consider stopping machine"
             )
 
-        # ====================================================
-        # TIMESTAMP
-        # ====================================================
 
         timestamp = (
             pd.Timestamp("2025-01-01")
@@ -564,10 +456,6 @@ for machine in machine_profiles:
                 hours=tool_age_hours
             )
         )
-
-        # ====================================================
-        # RECORD
-        # ====================================================
 
         rows.append({
 
@@ -651,10 +539,6 @@ for machine in machine_profiles:
         })
 
 
-# ============================================================
-# DATAFRAME
-# ============================================================
-
 df = pd.DataFrame(rows)
 
 df = df.sort_values(
@@ -662,19 +546,11 @@ df = df.sort_values(
 ).reset_index(drop=True)
 
 
-# ============================================================
-# SAVE
-# ============================================================
-
 df.to_csv(
     OUTPUT_FILE,
     index=False
 )
 
-
-# ============================================================
-# REPORT
-# ============================================================
 
 print()
 print("=" * 70)

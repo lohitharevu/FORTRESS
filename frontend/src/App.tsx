@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import "./App.css";
 
 type Status = "HEALTHY" | "AT RISK" | "CRITICAL";
-
 type Machine = {
   id: string;
   name: string;
@@ -44,8 +43,7 @@ type SensorForm = {
   toolAge: string;
 };
 
-const API_URL = "https://fortress-production-9b47.up.railway.app";
-
+const API_URL = "http://127.0.0.1:8000";
 const initialMachines: Machine[] = [
   {
     id: "CNC-001",

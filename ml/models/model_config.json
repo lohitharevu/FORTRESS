@@ -15,7 +15,7 @@
     ],
     "sequence_length": 40,
     "rul_scale": 1250.0,
-    "anomaly_threshold": 0.021987066738239205,
+    "anomaly_threshold": 0.24628453799421454,
     "failure_threshold": 0.5,
     "models": {
         "failure": "failure_model.keras",

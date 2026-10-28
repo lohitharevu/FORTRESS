@@ -1,0 +1,92 @@
+{
+    "split": {
+        "train_machines": [
+            "AUTO-CNC-005",
+            "AUTO-CNC-006",
+            "AUTO-CNC-008",
+            "AUTO-CNC-010",
+            "AUTO-CNC-016",
+            "AUTO-CNC-017",
+            "AUTO-CNC-018",
+            "AUTO-CNC-019",
+            "AUTO-CNC-021",
+            "AUTO-CNC-022",
+            "AUTO-CNC-024",
+            "AUTO-CNC-025",
+            "AUTO-CNC-026",
+            "AUTO-CNC-027",
+            "AUTO-CNC-028",
+            "AUTO-CNC-029",
+            "AUTO-CNC-030",
+            "AUTO-CNC-032",
+            "AUTO-CNC-033",
+            "AUTO-CNC-035",
+            "AUTO-CNC-038",
+            "AUTO-CNC-039",
+            "AUTO-CNC-040",
+            "AUTO-CNC-041",
+            "AUTO-CNC-042",
+            "AUTO-CNC-043",
+            "AUTO-CNC-046",
+            "AUTO-CNC-047",
+            "AUTO-CNC-048",
+            "AUTO-CNC-050"
+        ],
+        "validation_machines": [
+            "AUTO-CNC-004",
+            "AUTO-CNC-007",
+            "AUTO-CNC-011",
+            "AUTO-CNC-012",
+            "AUTO-CNC-020",
+            "AUTO-CNC-023",
+            "AUTO-CNC-031",
+            "AUTO-CNC-036",
+            "AUTO-CNC-044",
+            "AUTO-CNC-045"
+        ],
+        "test_machines": [
+            "AUTO-CNC-001",
+            "AUTO-CNC-002",
+            "AUTO-CNC-003",
+            "AUTO-CNC-009",
+            "AUTO-CNC-013",
+            "AUTO-CNC-014",
+            "AUTO-CNC-015",
+            "AUTO-CNC-034",
+            "AUTO-CNC-037",
+            "AUTO-CNC-049"
+        ]
+    },
+    "ann_test": {
+        "accuracy": 0.9944,
+        "precision": 0.9798177083333334,
+        "recall": 0.9836601307189542,
+        "f1": 0.9817351598173516,
+        "roc_auc": 0.9997701229252032,
+        "confusion_matrix_tn_fp_fn_tp": [
+            8439,
+            31,
+            25,
+            1505
+        ]
+    },
+    "ann_validation_threshold": 0.8099999999999996,
+    "autoencoder_threshold": 0.852784276008606,
+    "autoencoder_failure_proxy_metrics": {
+        "accuracy": 0.9596,
+        "precision": 0.7944560669456067,
+        "recall": 0.9928104575163399,
+        "f1": 0.8826263800116212,
+        "roc_auc": 0.9976461328332986,
+        "confusion_matrix_tn_fp_fn_tp": [
+            8077,
+            393,
+            11,
+            1519
+        ]
+    },
+    "autoencoder_healthy_test_false_alarm_rate": 0.0,
+    "lstm_test_mae_hours": 79.1059341430664,
+    "lstm_test_rmse_hours": 102.12443103421678,
+    "lstm_median_baseline_mae_hours": 186.8231201171875
+}

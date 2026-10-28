@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
-from backend.inference import analyze_machine
+from inference import analyze_machine
 
 
 app = FastAPI(
